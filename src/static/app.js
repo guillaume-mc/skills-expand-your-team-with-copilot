@@ -472,11 +472,14 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Constants for sharing
+  const SCHOOL_NAME = "Mergington High School";
+
   // Function to generate sharing URLs for an activity
   function generateShareLinks(activityName, description) {
-    const currentUrl = window.location.href.split('?')[0];
-    const shareUrl = `${currentUrl}?activity=${encodeURIComponent(activityName)}`;
-    const shareText = `Check out this activity at Mergington High School: ${activityName} - ${description}`;
+    const url = new URL(window.location.href);
+    const shareUrl = `${url.origin}${url.pathname}?activity=${encodeURIComponent(activityName)}`;
+    const shareText = `Check out this activity at ${SCHOOL_NAME}: ${activityName} - ${description}`;
     
     return {
       facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
@@ -489,7 +492,21 @@ document.addEventListener("DOMContentLoaded", () => {
   // Function to copy link to clipboard
   async function copyToClipboard(text, button) {
     try {
-      await navigator.clipboard.writeText(text);
+      // Try modern clipboard API first
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+      }
+      
       const originalText = button.innerHTML;
       button.innerHTML = '<span class="share-icon">✓</span> Copied!';
       button.classList.add('copied');
