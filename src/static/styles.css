@@ -609,6 +609,42 @@ footer {
   width: 100%;
 }
 
+/* Difficulty filter styles */
+.difficulty-filter-container {
+  margin-top: 10px;
+}
+
+.difficulty-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  width: 100%;
+}
+
+.difficulty-filter {
+  background-color: var(--background);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  padding: 4px 10px;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex: 0 1 auto;
+}
+
+.difficulty-filter.active {
+  background-color: var(--primary);
+  color: white;
+  border-color: var(--primary-dark);
+}
+
+.difficulty-filter:not(.active):hover {
+  background-color: var(--primary-light);
+  color: white;
+}
+
 .reset-button {
   background-color: var(--border);
   color: var(--text-primary);
@@ -703,4 +739,69 @@ footer {
 /* Dark mode toggle button */
 #dark-mode-toggle .icon {
   font-size: 1rem;
+}
+
+/* Social Sharing Buttons */
+.social-share-container {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-light);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.social-share-button {
+  background-color: var(--background);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  text-decoration: none;
+}
+
+.social-share-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.social-share-button.facebook:hover {
+  background-color: #1877f2;
+  color: white;
+  border-color: #1877f2;
+}
+
+.social-share-button.twitter:hover {
+  background-color: #1da1f2;
+  color: white;
+  border-color: #1da1f2;
+}
+
+.social-share-button.email:hover {
+  background-color: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.social-share-button.copy:hover {
+  background-color: var(--success);
+  color: white;
+  border-color: var(--success);
+}
+
+.social-share-button.copied {
+  background-color: var(--success);
+  color: white;
+  border-color: var(--success);
+}
+
+.share-icon {
+  font-size: 0.9rem;
 }
