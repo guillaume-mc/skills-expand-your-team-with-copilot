@@ -472,6 +472,55 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Constants for sharing
+  const SCHOOL_NAME = "Mergington High School";
+
+  // Function to generate sharing URLs for an activity
+  function generateShareLinks(activityName, description) {
+    const url = new URL(window.location.href);
+    const shareUrl = `${url.origin}${url.pathname}?activity=${encodeURIComponent(activityName)}`;
+    const shareText = `Check out this activity at ${SCHOOL_NAME}: ${activityName} - ${description}`;
+    
+    return {
+      facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
+      twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`,
+      email: `mailto:?subject=${encodeURIComponent(`Activity: ${activityName}`)}&body=${encodeURIComponent(shareText + '\n\n' + shareUrl)}`,
+      copyLink: shareUrl
+    };
+  }
+
+  // Function to copy link to clipboard
+  async function copyToClipboard(text, button) {
+    try {
+      // Try modern clipboard API first
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+      }
+      
+      const originalText = button.innerHTML;
+      button.innerHTML = '<span class="share-icon">✓</span> Copied!';
+      button.classList.add('copied');
+      
+      setTimeout(() => {
+        button.innerHTML = originalText;
+        button.classList.remove('copied');
+      }, 2000);
+    } catch (error) {
+      console.error('Failed to copy to clipboard:', error);
+      showMessage('Failed to copy link', 'error');
+    }
+  }
+
   // Function to render a single activity card
   function renderActivityCard(name, details) {
     const activityCard = document.createElement("div");
@@ -519,6 +568,27 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     `;
 
+    // Generate share links
+    const shareLinks = generateShareLinks(name, details.description);
+    
+    // Create social sharing buttons
+    const socialShareButtons = `
+      <div class="social-share-container">
+        <a href="${shareLinks.facebook}" target="_blank" rel="noopener noreferrer" class="social-share-button facebook" title="Share on Facebook">
+          <span class="share-icon">📘</span> Facebook
+        </a>
+        <a href="${shareLinks.twitter}" target="_blank" rel="noopener noreferrer" class="social-share-button twitter" title="Share on Twitter">
+          <span class="share-icon">🐦</span> Twitter
+        </a>
+        <a href="${shareLinks.email}" class="social-share-button email" title="Share via Email">
+          <span class="share-icon">✉️</span> Email
+        </a>
+        <button class="social-share-button copy" data-copy-link="${shareLinks.copyLink}" title="Copy link to clipboard">
+          <span class="share-icon">🔗</span> Copy Link
+        </button>
+      </div>
+    `;
+
     activityCard.innerHTML = `
       ${tagHtml}
       <h4>${name}</h4>
@@ -528,6 +598,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <span class="tooltip-text">Regular meetings at this time throughout the semester</span>
       </p>
       ${capacityIndicator}
+      ${socialShareButtons}
       <div class="participants-list">
         <h5>Current Participants:</h5>
         <ul>
@@ -576,6 +647,16 @@ document.addEventListener("DOMContentLoaded", () => {
     deleteButtons.forEach((button) => {
       button.addEventListener("click", handleUnregister);
     });
+
+    // Add click handler for copy link button
+    const copyButton = activityCard.querySelector(".social-share-button.copy");
+    if (copyButton) {
+      copyButton.addEventListener("click", (event) => {
+        event.preventDefault();
+        const linkToCopy = copyButton.getAttribute("data-copy-link");
+        copyToClipboard(linkToCopy, copyButton);
+      });
+    }
 
     // Add click handler for register button (only when authenticated)
     if (currentUser) {
